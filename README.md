@@ -1,6 +1,13 @@
 # WebIntents plugin for Phonegap #
 By Boris Smus
 
+
+# Deprecation Notice
+
+This repo is no longer under active development. Please see
+
+https://github.com/phonegap/phonegap-plugins/tree/master/Android/WebIntent/
+
 ## Adding the Plugin to your project ##
 1. To install the plugin, move webintent.js to your project's www folder and include a reference to it in your html files. 
 2. Create the path "com/borismus/webintent" within your project's src/ folder and move the java file into it.
