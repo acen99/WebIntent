@@ -1,4 +1,4 @@
-package com.borismus.webintent;
+package com.lizardsc.webintent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +24,7 @@ import org.apache.cordova.api.PluginResult;
  * (after setting up correct intent filters for PhoneGap applications), Android
  * intents can be handled by PhoneGap web applications.
  * 
- * @author boris@borismus.com
+ * @author boris@lizardsc.com
  * 
  */
 public class WebIntent extends Plugin {
