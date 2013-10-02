@@ -55,7 +55,7 @@ public class WebIntent extends Plugin {
                 if(obj.has("package") {
                     String package = obj.has("package") ? obj.getString("package");
                     Intent LaunchIntent = getPackageManager().getLaunchIntentForPackage("package");
-                    startActivity(LaunchIntent);
+                    ((DroidGap)this.cordova.getActivity()).startActivity(LaunchIntent);
 
                 } else {
                     String type = obj.has("type") ? obj.getString("type") : null;
