@@ -18,7 +18,7 @@
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="WebIntent" >
-                <param name="android-package" value="net.tunts.webintent"/>
+                <param name="android-package" value="net.tunts.webintent.WebIntent"/>
             </feature>
         </config-file>
 

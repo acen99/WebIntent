@@ -3,7 +3,7 @@ package net.tunts.webintent;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cordova.DroidGap;
+import org.apache.cordova.CordovaActivity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,9 +13,9 @@ import android.net.Uri;
 import android.util.Log;
 import android.text.Html;
 
-import org.apache.cordova.api.CordovaPlugin;
-import org.apache.cordova.api.PluginResult;
-import org.apache.cordova.api.CallbackContext;
+import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.PluginResult;
+import org.apache.cordova.CallbackContext;
 
 /**
  * WebIntent is a PhoneGap plugin that bridges Android intents and web applications:
@@ -200,7 +200,7 @@ public class WebIntent extends CordovaPlugin {
                 i.putExtra(key, value);
             }
         }
-        ((DroidGap) this.cordova.getActivity()).startActivity(i);
+        ((CordovaActivity) this.cordova.getActivity()).startActivity(i);
     }
 
     void sendBroadcast(String action, Map<String, String> extras) {
@@ -211,6 +211,6 @@ public class WebIntent extends CordovaPlugin {
             intent.putExtra(key, value);
         }
 
-        ((DroidGap) this.cordova.getActivity()).sendBroadcast(intent);
+        ((CordovaActivity) this.cordova.getActivity()).sendBroadcast(intent);
     }
 }
