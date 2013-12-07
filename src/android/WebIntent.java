@@ -74,7 +74,7 @@ public class WebIntent extends CordovaPlugin {
                     callbackContext.sendPluginResult(res);
                     return false;
                 }
-                Intent i = ((DroidGap) this.cordova.getActivity()).getIntent();
+                Intent i = ((CordovaActivity) this.cordova.getActivity()).getIntent();
                 String extraName = args.getString(0);
                 PluginResult res = new PluginResult(PluginResult.Status.OK, i.hasExtra(extraName));
                 callbackContext.sendPluginResult(res);
@@ -86,7 +86,7 @@ public class WebIntent extends CordovaPlugin {
                     callbackContext.sendPluginResult(res);
                     return false;
                 }
-                Intent i = ((DroidGap) this.cordova.getActivity()).getIntent();
+                Intent i = ((CordovaActivity) this.cordova.getActivity()).getIntent();
                 String extraName = args.getString(0);
 
                 if (i.hasExtra(extraName)) {
@@ -107,7 +107,7 @@ public class WebIntent extends CordovaPlugin {
                     return false;
                 }
 
-                Intent i = ((DroidGap) this.cordova.getActivity()).getIntent();
+                Intent i = ((CordovaActivity) this.cordova.getActivity()).getIntent();
                 String uri = i.getDataString();
 
                 callbackContext.success(uri);
