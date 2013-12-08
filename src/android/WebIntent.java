@@ -10,7 +10,6 @@ import org.json.JSONObject;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.util.Log;
 import android.text.Html;
 
 import org.apache.cordova.CordovaPlugin;
@@ -52,7 +51,9 @@ public class WebIntent extends CordovaPlugin {
                 String type = obj.has("type") ? obj.getString("type") : null;
                 Uri uri = obj.has("url") ? Uri.parse(obj.getString("url")) : null;
                 JSONObject extras = obj.has("extras") ? obj.getJSONObject("extras") : null;
+                JSONObject handler = obj.has("handler") ? obj.getJSONObject("handler") : null;
                 Map<String, String> extrasMap = new HashMap<String, String>();
+                Map<String, String> handlerMap = null;
 
                 // Populate the extras if any exist
                 if (extras != null) {
@@ -64,7 +65,14 @@ public class WebIntent extends CordovaPlugin {
                     }
                 }
 
-                startActivity(obj.getString("action"), uri, type, extrasMap);
+                if (handler != null) {
+                    handlerMap = new HashMap<String, String>();
+
+                    handlerMap.put("packageName", handler.getString("packageName"));
+                    handlerMap.put("className", handler.getString("className"));
+                }
+
+                startActivity(obj.getString("action"), uri, type, extrasMap, handlerMap);
                 callbackContext.success();
                 return true;
 
@@ -173,8 +181,12 @@ public class WebIntent extends CordovaPlugin {
         }
     }
 
-    void startActivity(String action, Uri uri, String type, Map<String, String> extras) {
+    void startActivity(String action, Uri uri, String type, Map<String, String> extras, Map<String, String> handlerMap) {
         Intent i = (uri != null ? new Intent(action, uri) : new Intent(action));
+
+        if (handlerMap != null) {
+            i.setClassName(handlerMap.get("packageName"), handlerMap.get("className"));
+        }
 
         if (type != null && uri != null) {
             i.setDataAndType(uri, type); // Fix the crash problem with android 2.3.6

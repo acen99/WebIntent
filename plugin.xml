@@ -4,14 +4,14 @@
     xmlns:rim="http://www.blackberry.com/ns/widgets"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="net.tunts.webintent"
-    version="0.1.0">
+    version="0.2.0">
     <name>WebIntent</name>
     <description>Web Intent Plugin</description>
     <license>Apache 2.0</license>
     <keywords>cordova,webintent</keywords>
 
-    <js-module src="www/webintent.js" name="webIntnet">
-        <clobbers target="webIntent" />
+    <js-module src="www/webintent.js" name="WebIntent">
+        <clobbers target="WebIntent" />
     </js-module>
 
     <!-- android -->
