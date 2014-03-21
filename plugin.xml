@@ -3,26 +3,26 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     xmlns:rim="http://www.blackberry.com/ns/widgets"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    id="com.borismus.webintent"
-    version="0.1.0">
+    id="net.tunts.webintent"
+    version="0.2.1">
     <name>WebIntent</name>
     <description>Web Intent Plugin</description>
     <license>Apache 2.0</license>
     <keywords>cordova,webintent</keywords>
 
-    <js-module src="www/webintent.js" name="webIntnet">
-        <clobbers target="webIntent" />
+    <js-module src="www/webintent.js" name="WebIntent">
+        <clobbers target="WebIntent" />
     </js-module>
 
     <!-- android -->
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="WebIntent" >
-                <param name="android-package" value="com.borismus.webintent"/>
+                <param name="android-package" value="net.tunts.webintent.WebIntent"/>
             </feature>
         </config-file>
 
-        <source-file src="src/android/WebIntent.java" target-dir="src/com/borismus" />
+        <source-file src="src/android/WebIntent.java" target-dir="src/net/tunts/webintent" />
     </platform>
 
 </plugin>
