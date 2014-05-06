@@ -1,21 +1,21 @@
 package net.tunts.webintent;
 
+import com.palmomedia.rss.bz.R;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cordova.CordovaActivity;
+import org.apache.cordova.DroidGap;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.Html;
 
-import org.apache.cordova.CordovaPlugin;
-import org.apache.cordova.PluginResult;
-import org.apache.cordova.CallbackContext;
+import org.apache.cordova.api.CordovaPlugin;
+import org.apache.cordova.api.PluginResult;
+import org.apache.cordova.api.CallbackContext;
 
 /**
  * WebIntent is a PhoneGap plugin that bridges Android intents and web applications:
@@ -51,10 +51,9 @@ public class WebIntent extends CordovaPlugin {
                 JSONObject obj = args.getJSONObject(0);
                 String type = obj.has("type") ? obj.getString("type") : null;
                 Uri uri = obj.has("url") ? Uri.parse(obj.getString("url")) : null;
+                String packagename = obj.has("packagename") ? obj.getString("packagename") : null;
                 JSONObject extras = obj.has("extras") ? obj.getJSONObject("extras") : null;
-                JSONObject handler = obj.has("handler") ? obj.getJSONObject("handler") : null;
                 Map<String, String> extrasMap = new HashMap<String, String>();
-                Map<String, String> handlerMap = null;
 
                 // Populate the extras if any exist
                 if (extras != null) {
@@ -66,20 +65,7 @@ public class WebIntent extends CordovaPlugin {
                     }
                 }
 
-                if (handler != null) {
-                    handlerMap = new HashMap<String, String>();
-
-                    handlerMap.put("packageName", handler.getString("packageName"));
-                    handlerMap.put("className", handler.getString("className"));
-                }
-
-                try{
-                    startActivity(obj.getString("action"), uri, type, extrasMap, handlerMap);
-                } catch (ActivityNotFoundException e){
-                    callbackContext.error(e.getMessage());
-                    return false;
-                }
-
+                startActivity(obj.getString("action"), uri, type, extrasMap, packagename);
                 callbackContext.success();
                 return true;
 
@@ -89,7 +75,7 @@ public class WebIntent extends CordovaPlugin {
                     callbackContext.sendPluginResult(res);
                     return false;
                 }
-                Intent i = ((CordovaActivity) this.cordova.getActivity()).getIntent();
+                Intent i = ( this.cordova.getActivity()).getIntent();
                 String extraName = args.getString(0);
                 PluginResult res = new PluginResult(PluginResult.Status.OK, i.hasExtra(extraName));
                 callbackContext.sendPluginResult(res);
@@ -101,7 +87,7 @@ public class WebIntent extends CordovaPlugin {
                     callbackContext.sendPluginResult(res);
                     return false;
                 }
-                Intent i = ((CordovaActivity) this.cordova.getActivity()).getIntent();
+                Intent i = ( this.cordova.getActivity()).getIntent();
                 String extraName = args.getString(0);
 
                 if (i.hasExtra(extraName)) {
@@ -122,7 +108,7 @@ public class WebIntent extends CordovaPlugin {
                     return false;
                 }
 
-                Intent i = ((CordovaActivity) this.cordova.getActivity()).getIntent();
+                Intent i = ( this.cordova.getActivity()).getIntent();
                 String uri = i.getDataString();
 
                 callbackContext.success(uri);
@@ -188,12 +174,8 @@ public class WebIntent extends CordovaPlugin {
         }
     }
 
-    void startActivity(String action, Uri uri, String type, Map<String, String> extras, Map<String, String> handlerMap) {
+    void startActivity(String action, Uri uri, String type, Map<String, String> extras, String packagename) {
         Intent i = (uri != null ? new Intent(action, uri) : new Intent(action));
-
-        if (handlerMap != null) {
-            i.setClassName(handlerMap.get("packageName"), handlerMap.get("className"));
-        }
 
         if (type != null && uri != null) {
             i.setDataAndType(uri, type); // Fix the crash problem with android 2.3.6
@@ -201,6 +183,10 @@ public class WebIntent extends CordovaPlugin {
             if (type != null) {
                 i.setType(type);
             }
+        }
+        
+        if(packagename != null) {
+        	i.setPackage(packagename);  
         }
 
         for (String key : extras.keySet()) {
@@ -219,7 +205,7 @@ public class WebIntent extends CordovaPlugin {
                 i.putExtra(key, value);
             }
         }
-        ((CordovaActivity) this.cordova.getActivity()).startActivity(i);
+        ( this.cordova.getActivity()).startActivity(i);
     }
 
     void sendBroadcast(String action, Map<String, String> extras) {
@@ -230,6 +216,6 @@ public class WebIntent extends CordovaPlugin {
             intent.putExtra(key, value);
         }
 
-        ((CordovaActivity) this.cordova.getActivity()).sendBroadcast(intent);
+        ( this.cordova.getActivity()).sendBroadcast(intent);
     }
 }
