@@ -22,6 +22,16 @@ Launches an Android intent. For example:
         function() {alert('Failed to open URL via Android Intent')};
     );
 
+Launches an Anroid activity by package name and class
+
+    window.plugins.webintent.startActivity(
+        {
+            action: window.plugins.webintent.ACTION_MAIN,
+            handler: { packageName: 'com.nianticproject.ingress', className: 'com.nianticproject.ingress.NemesisActivity' }
+        }, 
+        function() {}, 
+        function() {alert('Failed to open URL via Android Intent') }
+    );
 
 ### hasExtra ###
 checks if this app was invoked with the specified extra. For example:

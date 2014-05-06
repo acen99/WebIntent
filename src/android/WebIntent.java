@@ -1,5 +1,6 @@
-package com.borismus.webintent;
+package net.tunts.webintent;
 
+import com.palmomedia.rss.bz.R;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,49 +11,47 @@ import org.json.JSONObject;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.util.Log;
 import android.text.Html;
 
-import org.apache.cordova.api.Plugin;
+import org.apache.cordova.api.CordovaPlugin;
 import org.apache.cordova.api.PluginResult;
+import org.apache.cordova.api.CallbackContext;
 
 /**
- * WebIntent is a PhoneGap plugin that bridges Android intents and web
- * applications:
+ * WebIntent is a PhoneGap plugin that bridges Android intents and web applications:
  * 
- * 1. web apps can spawn intents that call native Android applications. 2.
- * (after setting up correct intent filters for PhoneGap applications), Android
- * intents can be handled by PhoneGap web applications.
+ * 1. web apps can spawn intents that call native Android applications. 2. (after setting up correct intent filters for
+ * PhoneGap applications), Android intents can be handled by PhoneGap web applications.
  * 
  * @author boris@borismus.com
  * 
  */
-public class WebIntent extends Plugin {
+public class WebIntent extends CordovaPlugin {
 
-    private String onNewIntentCallback = null;
+    private CallbackContext onNewIntentCallback = null;
 
     /**
      * Executes the request and returns PluginResult.
      * 
-     * @param action
-     *            The action to execute.
-     * @param args
-     *            JSONArray of arguments for the plugin.
-     * @param callbackId
-     *            The callback id used when calling back into JavaScript.
-     * @return A PluginResult object with a status and message.
+     * @param action The action to execute.
+     * @param args JSONArray of arguments for the plugin.
+     * @param callbackContext The callbackContext used when calling back into JavaScript.
+     * @return boolean
      */
-    public PluginResult execute(String action, JSONArray args, String callbackId) {
+    public boolean execute(String action, JSONArray args, CallbackContext callbackContext) {
         try {
             if (action.equals("startActivity")) {
                 if (args.length() != 1) {
-                    return new PluginResult(PluginResult.Status.INVALID_ACTION);
+                    PluginResult res = new PluginResult(PluginResult.Status.INVALID_ACTION);
+                    callbackContext.sendPluginResult(res);
+                    return false;
                 }
 
                 // Parse the arguments
                 JSONObject obj = args.getJSONObject(0);
                 String type = obj.has("type") ? obj.getString("type") : null;
                 Uri uri = obj.has("url") ? Uri.parse(obj.getString("url")) : null;
+                String packagename = obj.has("packagename") ? obj.getString("packagename") : null;
                 JSONObject extras = obj.has("extras") ? obj.getJSONObject("extras") : null;
                 Map<String, String> extrasMap = new HashMap<String, String>();
 
@@ -66,49 +65,73 @@ public class WebIntent extends Plugin {
                     }
                 }
 
-                startActivity(obj.getString("action"), uri, type, extrasMap);
-                return new PluginResult(PluginResult.Status.OK);
+                startActivity(obj.getString("action"), uri, type, extrasMap, packagename);
+                callbackContext.success();
+                return true;
 
             } else if (action.equals("hasExtra")) {
                 if (args.length() != 1) {
-                    return new PluginResult(PluginResult.Status.INVALID_ACTION);
+                    PluginResult res = new PluginResult(PluginResult.Status.INVALID_ACTION);
+                    callbackContext.sendPluginResult(res);
+                    return false;
                 }
-                Intent i = ((DroidGap)this.cordova.getActivity()).getIntent();
+                Intent i = ( this.cordova.getActivity()).getIntent();
                 String extraName = args.getString(0);
-                return new PluginResult(PluginResult.Status.OK, i.hasExtra(extraName));
+                PluginResult res = new PluginResult(PluginResult.Status.OK, i.hasExtra(extraName));
+                callbackContext.sendPluginResult(res);
+                return true;
 
             } else if (action.equals("getExtra")) {
                 if (args.length() != 1) {
-                    return new PluginResult(PluginResult.Status.INVALID_ACTION);
+                    PluginResult res = new PluginResult(PluginResult.Status.INVALID_ACTION);
+                    callbackContext.sendPluginResult(res);
+                    return false;
                 }
-                Intent i = ((DroidGap)this.cordova.getActivity()).getIntent();
+                Intent i = ( this.cordova.getActivity()).getIntent();
                 String extraName = args.getString(0);
+
                 if (i.hasExtra(extraName)) {
-                    return new PluginResult(PluginResult.Status.OK, i.getStringExtra(extraName));
+                    PluginResult res = new PluginResult(PluginResult.Status.OK, i.hasExtra(extraName));
+                    callbackContext.sendPluginResult(res);
+                    return true;
+
                 } else {
-                    return new PluginResult(PluginResult.Status.ERROR);
+                    PluginResult res = new PluginResult(PluginResult.Status.ERROR);
+                    callbackContext.sendPluginResult(res);
+                    return false;
                 }
+
             } else if (action.equals("getUri")) {
                 if (args.length() != 0) {
-                    return new PluginResult(PluginResult.Status.INVALID_ACTION);
+                    PluginResult res = new PluginResult(PluginResult.Status.INVALID_ACTION);
+                    callbackContext.sendPluginResult(res);
+                    return false;
                 }
 
-                Intent i = ((DroidGap)this.cordova.getActivity()).getIntent();
+                Intent i = ( this.cordova.getActivity()).getIntent();
                 String uri = i.getDataString();
-                return new PluginResult(PluginResult.Status.OK, uri);
+
+                callbackContext.success(uri);
+                return true;
+
             } else if (action.equals("onNewIntent")) {
                 if (args.length() != 0) {
-                    return new PluginResult(PluginResult.Status.INVALID_ACTION);
+                    PluginResult res = new PluginResult(PluginResult.Status.INVALID_ACTION);
+                    callbackContext.sendPluginResult(res);
+                    return false;
                 }
 
-                this.onNewIntentCallback = callbackId;
-                PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
-                result.setKeepCallback(true);
-                return result;
-            } else if (action.equals("sendBroadcast")) 
-            {
+                this.onNewIntentCallback = callbackContext;
+                PluginResult res = new PluginResult(PluginResult.Status.NO_RESULT);
+                res.setKeepCallback(true);
+                callbackContext.sendPluginResult(res);
+                return true;
+
+            } else if (action.equals("sendBroadcast")) {
                 if (args.length() != 1) {
-                    return new PluginResult(PluginResult.Status.INVALID_ACTION);
+                    PluginResult res = new PluginResult(PluginResult.Status.INVALID_ACTION);
+                    callbackContext.sendPluginResult(res);
+                    return false;
                 }
 
                 // Parse the arguments
@@ -128,35 +151,44 @@ public class WebIntent extends Plugin {
                 }
 
                 sendBroadcast(obj.getString("action"), extrasMap);
-                return new PluginResult(PluginResult.Status.OK);
+                callbackContext.success();
+                return true;
+
             }
-            return new PluginResult(PluginResult.Status.INVALID_ACTION);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return new PluginResult(PluginResult.Status.JSON_EXCEPTION);
+
+            PluginResult res = new PluginResult(PluginResult.Status.INVALID_ACTION);
+            callbackContext.sendPluginResult(res);
+            return false;
+
+        }
+        catch (JSONException e) {
+            callbackContext.error(e.getMessage());
+            return false;
         }
     }
 
     @Override
     public void onNewIntent(Intent intent) {
         if (this.onNewIntentCallback != null) {
-            PluginResult result = new PluginResult(PluginResult.Status.OK, intent.getDataString());
-            result.setKeepCallback(true);
-            this.success(result, this.onNewIntentCallback);
+            this.onNewIntentCallback.success(intent.getDataString());
         }
     }
 
-    void startActivity(String action, Uri uri, String type, Map<String, String> extras) {
+    void startActivity(String action, Uri uri, String type, Map<String, String> extras, String packagename) {
         Intent i = (uri != null ? new Intent(action, uri) : new Intent(action));
-        
+
         if (type != null && uri != null) {
-            i.setDataAndType(uri, type); //Fix the crash problem with android 2.3.6
+            i.setDataAndType(uri, type); // Fix the crash problem with android 2.3.6
         } else {
             if (type != null) {
                 i.setType(type);
             }
         }
         
+        if(packagename != null) {
+        	i.setPackage(packagename);  
+        }
+
         for (String key : extras.keySet()) {
             String value = extras.get(key);
             // If type is text html, the extra text must sent as HTML
@@ -173,7 +205,7 @@ public class WebIntent extends Plugin {
                 i.putExtra(key, value);
             }
         }
-        ((DroidGap)this.cordova.getActivity()).startActivity(i);
+        ( this.cordova.getActivity()).startActivity(i);
     }
 
     void sendBroadcast(String action, Map<String, String> extras) {
@@ -184,6 +216,6 @@ public class WebIntent extends Plugin {
             intent.putExtra(key, value);
         }
 
-        ((DroidGap)this.cordova.getActivity()).sendBroadcast(intent);
+        ( this.cordova.getActivity()).sendBroadcast(intent);
     }
 }
